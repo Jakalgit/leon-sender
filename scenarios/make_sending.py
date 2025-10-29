@@ -1,17 +1,18 @@
 import asyncio
+import logging
 import re
 
 from aiogram import Dispatcher, Bot, Router, types, F
 from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
-from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from callback_data import CallbackDataSimple, RespondCallback
 from db.database import get_chats
 from filters import UserFilter
+from logs import logger
 from messages import Messages
 from states import States
 
@@ -42,7 +43,11 @@ def load_handlers(dp: Dispatcher, bot: Bot):
         try:
             chats = get_chats()
             for c in chats:
-                chat = await bot.get_chat(int(c['chat_id']))
+                try:
+                    chat = await bot.get_chat(int(c['chat_id']))
+                except Exception as e:
+                    logger.log(msg=e, level=logging.INFO)
+                    continue
                 text = f"<b>[<code>{chat.id}</code>] {chat.title}</b>"
                 await bot.send_message(
                     chat_id=callback_query.message.chat.id,
