@@ -58,9 +58,6 @@ def load_handlers(dp: Dispatcher, bot: Bot):
         except TelegramBadRequest as e:
             await callback_query.message.reply(f"Не удалось получить информацию о чате: {e}")
             return
-        except Exception as e:
-            await callback_query.message.reply(f"Ошибка: {e}")
-            return
 
         inline_keyboard = [
             [InlineKeyboardButton(text="Отправить во все", callback_data=CallbackDataSimple.SEND_IN_ALL)],
